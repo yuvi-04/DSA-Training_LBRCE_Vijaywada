@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.IntSummaryStatistics;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Array_day4 {
@@ -145,8 +148,40 @@ public class Array_day4 {
         }
         return globalMax;
     }
+
+    //Question 8: Boyer-Moore Voting Algorithm
+    public static int findMajority(int[] nums) {
+        int count = 0;
+        int candidate = 0;
+        
+        //Find Candidate
+        for(int num : nums) {
+            if(count == 0)
+                candidate = num;
+            count += (num == candidate) ? 1 : -1;
+        }
+        //Verification Process
+        int verificationCount = 0;
+        for(int num : nums) {
+            if(num == candidate) verificationCount++;
+        }
+        if(verificationCount > nums.length/2)
+            return candidate;
+
+        throw new IllegalArgumentException("No Majority element exists");
+        
+        //int -> Integer
+        // return Arrays.stream(nums)
+        //         .boxed()
+        //         .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+        //         .entrySet()
+        //         .stream()
+        //         .max(Map.Entry.comparingByValue())
+        //         .map(Map.Entry::getKey)
+        //         .orElseThrow(() -> new IllegalArgumentException("Invalid Array"));
+    }
     public static void main(String[] args) {
-        int[] arr = {2, 3, -2, 4, 0, -3};
+        int[] arr = {2, 2, 1, 1, 1, 2, 4};
         //Q1
         // System.out.println(findMinMax(arr)[0]);
         // System.out.println(findMinMax(arr)[1]);
@@ -191,6 +226,9 @@ public class Array_day4 {
         // System.out.println(longestSubarraySum(arr, 7));
 
         //Q7
-        System.out.println(maxProductSubarray(arr));
+        // System.out.println(maxProductSubarray(arr));
+
+        //Q8
+        System.out.println(findMajority(arr));
     }
 }
