@@ -226,6 +226,46 @@ public class GraphAlgorithm {
         }
         return totalCost;
     }
+
+    //Q6: critical connections (bridges) in a network
+    //leetcode 1192 (Tarjan's Algorithm)
+    private static int timer = 0;
+    public static List<List<Integer>> criticalConnection(int n, List<List<Integer>> connections) {
+        List<List<Integer>> adj = new ArrayList<>();
+        for(int i =0; i<n; i++) adj.add(new ArrayList<>());
+        for (List<Integer> edge : connections) {
+            adj.get(edge.get(0)).add(edge.get(1));
+            adj.get(edge.get(1)).add(edge.get(0));
+        }
+
+        int[] disc = new int[n];
+        int[] low = new int[n];
+        boolean[] visited = new boolean[n];
+        List<List<Integer>> bridges = new ArrayList<>();
+        timer = 0;
+        dfsTarjan(0, -1, visited, disc, low, adj, bridges);
+        return bridges;
+
+    }
+    private static void dfsTarjan(int node, int parent, boolean[] visited, int[] disc, int[] low, List<List<Integer>> adj,
+            List<List<Integer>> bridges) {
+        visited[node] = true;
+        disc[node] = low[node] = ++timer;
+
+        for (int neighbour : adj.get(node)) {
+            if(neighbour == parent) continue;
+
+            if(!visited[neighbour]) {
+                dfsTarjan(neighbour, node, visited, disc, low, adj, bridges);
+                low[node] = Math.min(low[node], low[neighbour]);
+
+                if (low[neighbour] > disc[node]) {
+                    bridges.add(Arrays.asList(node, neighbour));
+                }
+            } else low[node] = Math.min(low[node], disc[neighbour]);
+        }
+    }
+
     public static void main(String[] args) {
         //Q1
         // int[][] times = {{2,1,1}, {2,3,1}, {3,4,1}};
@@ -247,12 +287,19 @@ public class GraphAlgorithm {
         // System.out.println(kruskalMST(graph1, 9));
 
         //Q4
-        int [][] graph2 = {
-            {0, 1, 4},{0, 7, 8},{1, 2, 8},{1, 7, 11},
-            {2, 3, 7},{2, 8, 2},{2, 5, 4},{3, 4, 9},
-            {3, 5, 14},{4, 5, 10},{5, 6, 2},{6, 7, 1},
-            {6, 8, 6},{7, 8, 7}
-        };
-        System.out.println(primsMST(graph2, 9));
+        // int [][] graph2 = {
+        //     {0, 1, 4},{0, 7, 8},{1, 2, 8},{1, 7, 11},
+        //     {2, 3, 7},{2, 8, 2},{2, 5, 4},{3, 4, 9},
+        //     {3, 5, 14},{4, 5, 10},{5, 6, 2},{6, 7, 1},
+        //     {6, 8, 6},{7, 8, 7}
+        // };
+        // System.out.println(primsMST(graph2, 9));
+
+        //Q6
+        List<List<Integer>> connections = Arrays.asList(
+            Arrays.asList(0,1), Arrays.asList(1,2),
+            Arrays.asList(2,0), Arrays.asList(1,3)
+        );
+        System.out.println(criticalConnection(4, connections));
     }
 }
